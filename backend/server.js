@@ -12,13 +12,24 @@ const app = express();
 
 // Connect to MongoDB
 connectDB();
-
+const allowedOrigins = [
+  "https://job-portal-five-mocha.vercel.app",
+  "https://job-portal-3eozq6abj-vishalya6s-projects.vercel.app"
+];
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: "https://job-portal-five-mocha.vercel.app", // Adjust this to your frontend URL
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true
+  })
+);
 
 // Routes
 app.use("/api/auth", authRoutes);
